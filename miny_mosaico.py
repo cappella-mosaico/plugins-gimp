@@ -66,7 +66,6 @@ def load_pregador(img, image_pregador, toggle_cubism_effect):
     new_height = 560
 
     if (toggle_cubism_effect):
-        new_height = 560
         tile_saturation = 10.0
         tile_size = 10.0
         background_color = 0
@@ -75,11 +74,7 @@ def load_pregador(img, image_pregador, toggle_cubism_effect):
     new_width = (new_height * layer_pregador.width) / layer_pregador.height
     local_origin = True
     pdb.gimp_layer_scale(layer_pregador, new_width, new_height, local_origin)
-
-    if (toggle_cubism_effect):
-        pdb.gimp_layer_set_offsets(layer_pregador, 0, 0)
-    else:
-        pdb.gimp_layer_set_offsets(layer_pregador, 0, 0)
+    pdb.gimp_layer_set_offsets(layer_pregador, 0, 0)
 
 def load_logo_culto(img, image_path):
     image_logo_culto = image_path + "/background/logo_culto.png"
