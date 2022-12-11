@@ -60,24 +60,24 @@ def load_pregador(img, image_pregador, toggle_cubism_effect):
     pdb.gimp_image_insert_layer(img, layer_pregador, parent, position)
 
     brightness = 0.0
-    contrast = 0.2
+    contrast = 0.15
     pdb.gimp_drawable_brightness_contrast(layer_pregador, brightness, contrast)
 
     new_height = 560
 
     if (toggle_cubism_effect):
-        new_height = 580
-        tile_size = 15.0
-        tile_saturation = 2.5
+        new_height = 560
+        tile_saturation = 10.0
+        tile_size = 10.0
         background_color = 0
-        pdb.plug_in_cubism(img, layer_pregador, tile_size, tile_saturation, background_color)
+        pdb.plug_in_cubism(img, layer_pregador, tile_saturation, tile_size, background_color)
 
     new_width = (new_height * layer_pregador.width) / layer_pregador.height
     local_origin = True
     pdb.gimp_layer_scale(layer_pregador, new_width, new_height, local_origin)
 
     if (toggle_cubism_effect):
-        pdb.gimp_layer_set_offsets(layer_pregador, -10, -10)
+        pdb.gimp_layer_set_offsets(layer_pregador, 0, 0)
     else:
         pdb.gimp_layer_set_offsets(layer_pregador, 0, 0)
 
