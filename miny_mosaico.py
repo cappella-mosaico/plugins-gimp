@@ -66,10 +66,10 @@ def load_pregador(img, image_pregador, toggle_cubism_effect):
     new_height = 560
 
     if (toggle_cubism_effect):
-        tile_saturation = 10.0
-        tile_size = 10.0
+        tile_saturation = 5.0
+        tile_size = 22.0
         background_color = 0
-        pdb.plug_in_cubism(img, layer_pregador, tile_saturation, tile_size, background_color)
+        pdb.plug_in_cubism(img, layer_pregador, tile_size, tile_saturation, background_color)
 
     new_width = (new_height * layer_pregador.width) / layer_pregador.height
     local_origin = True
