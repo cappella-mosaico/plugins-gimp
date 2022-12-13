@@ -3,13 +3,13 @@
 from gimpfu import *
 from random import randint
 
-def load_background(img, image_path):
+def load_background(img, image_path, background_name):
     # Background layer.
     background = gimp.Layer(img, "Background", img.width, img.height,
                             RGB_IMAGE, 100, NORMAL_MODE)
     background.fill(BACKGROUND_FILL)
     img.add_layer(background, 0)
-    image_background = image_path + "/background/fundo_pregacao.png"
+    image_background = image_path + "/background/" + background_name + ".png"
     layer_background = pdb.gimp_file_load_layer(img, image_background)
     pdb.gimp_layer_set_opacity(layer_background, 50)
     parent = None
@@ -36,7 +36,7 @@ def load_pregador_textbox(img, pregador):
     height = TEXTBOX_HEIGHT
     pdb.gimp_text_layer_resize(layer, width, height)
 
-def load_title_textbox(img, title):
+def load_title_textbox(img, title, size):
     # nova camada pro titulo
     drawable = None
     x = 500
@@ -44,7 +44,7 @@ def load_title_textbox(img, title):
     text_to_show = "\"" + title + "\""
     border = 10
     antialias = True
-    size = 72.0
+    size = size
     size_type = PIXELS
     fontname = "Eastman Condensed Trial Ultra-Bold Condensed"
     layer = pdb.gimp_text_fontname(img, drawable, x, y, text_to_show, border, antialias, size, size_type, fontname)
@@ -70,6 +70,12 @@ def load_pregador(img, image_pregador, toggle_cubism_effect):
         tile_size = 22.0
         background_color = 0
         pdb.plug_in_cubism(img, layer_pregador, tile_size, tile_saturation, background_color)
+        hue_range = 0.0
+        hue_offset = 30.0
+        lightness = 0.0
+        saturation = 100.0
+        overlap = 0.0
+        pdb.gimp_drawable_hue_saturation(layer_pregador, hue_range, hue_offset, lightness, saturation, overlap)
 
     new_width = (new_height * layer_pregador.width) / layer_pregador.height
     local_origin = True
@@ -83,40 +89,50 @@ def load_logo_culto(img, image_path):
     position = 0
     pdb.gimp_image_insert_layer(img, layer, parent, position)
 
-def startup(title, image_path, text_color, pregador):
+def startup(title, text_color, pregador, picture_pregador, photo_count, thumb_type, base_directory, background_name):
     width = 960
     height = 540
     img = gimp.Image(width, height, RGB)
 
-    load_background(img, image_path)
+    load_background(img, base_directory, background_name)
 
-    # selecionar cor
-    gimp.set_foreground(text_color)
+    # selecionar preto para fazer sombra
+    gimp.set_foreground((0.0, 0.0, 0.0))
 
-    image_pregador = image_path + "/recortes/felipe"+ str(randint(1, 36)).zfill( 3)  +".png"
+    image_pregador = base_directory + "/recortes/" + picture_pregador + str(randint(1, photo_count)).zfill( 3)  +".png"
     with_cubism = True
     load_pregador(img, image_pregador, with_cubism)
     without_cubism = False
     load_pregador(img, image_pregador, without_cubism)
-    load_title_textbox(img, title)
+    load_title_textbox(img, title, 100.0)
+
+    # selecionar cor
+    gimp.set_foreground(text_color)
+    load_title_textbox(img, title, 72.0)
     load_pregador_textbox(img, pregador)
-    load_logo_culto(img, image_path)
+
+    load_logo_culto(img, base_directory)
 
     gimp.Display(img)
 
 
 register(
     "python-fu-startup",
-    "Importation Demonstration",
+    "Nova Miniatura Mosaico",
     "Merely registers a plug-in",
     "Ruither Borba", "Ruither Borba", "2022",
     "Nova Miniatura Mosaico",
     "",  # does not require an image
     [
-       (PF_STRING, "title", "Texto Thumb", ""),
-       (PF_STRING, "image_path", "Pasta Pregadores", "/home/ruither/Dropbox/Mosaico - Slides/imagens/miniaturas-youtube"),
-       (PF_COLOR, "text_color", "Cor do Texto", (0.0, 0.0, 0.0)),
-       (PF_STRING, "pregador", "Nome Pregador", "Pr. Felipe Lobo")
+        (PF_STRING, "title", "Texto Thumb", ""),
+        (PF_COLOR, "text_color", "Cor do Texto", (0.0, 0.0, 0.0)),
+        (PF_STRING, "pregador", "Nome Pregador", "Pr. Felipe Lobo"),
+        (PF_STRING, "foto_pregador", "Foto Pregador", "felipe"),
+        (PF_INT, "photo_count", "Quantidade de fotos desse pregador", 36),
+        (PF_RADIO, "thumb_type", "Tipo Miniatura", "culto",
+          (("Culto", "culto"), ("EBD", "ebd"))),
+        (PF_DIRNAME, "base_directory", "Pasta Miniaturas", "/home/ruither/Dropbox/Mosaico - Slides/imagens/miniaturas-youtube"),
+        (PF_STRING, "background_name", "Imagem de Fundo (PNG)", "fundo_pregacao")
     ],
     [],
     startup,
