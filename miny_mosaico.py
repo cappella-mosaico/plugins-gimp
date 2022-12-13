@@ -41,7 +41,7 @@ def load_title_textbox(img, title, size):
     drawable = None
     x = 500
     y = 40
-    text_to_show = "\"" + title + "\""
+    text_to_show = title
     border = 10
     antialias = True
     size = size
@@ -89,7 +89,7 @@ def load_logo_culto(img, image_path):
     position = 0
     pdb.gimp_image_insert_layer(img, layer, parent, position)
 
-def startup(title, text_color, pregador, picture_pregador, photo_count, thumb_type, base_directory, background_name):
+def startup(title, headline, text_color, pregador, picture_pregador, photo_count, thumb_type, base_directory, background_name):
     width = 960
     height = 540
     img = gimp.Image(width, height, RGB)
@@ -104,11 +104,11 @@ def startup(title, text_color, pregador, picture_pregador, photo_count, thumb_ty
     load_pregador(img, image_pregador, with_cubism)
     without_cubism = False
     load_pregador(img, image_pregador, without_cubism)
-    load_title_textbox(img, title, 100.0)
+    load_title_textbox(img, headline, 100.0)
 
     # selecionar cor
     gimp.set_foreground(text_color)
-    load_title_textbox(img, title, 72.0)
+    load_title_textbox(img, "\"" + title + "\"", 72.0)
     load_pregador_textbox(img, pregador)
 
     load_logo_culto(img, base_directory)
@@ -125,6 +125,7 @@ register(
     "",  # does not require an image
     [
         (PF_STRING, "title", "Texto Thumb", ""),
+        (PF_STRING, "headline", "Termo de Destaque", ""),
         (PF_COLOR, "text_color", "Cor do Texto", (0.0, 0.0, 0.0)),
         (PF_STRING, "pregador", "Nome Pregador", "Pr. Felipe Lobo"),
         (PF_STRING, "foto_pregador", "Foto Pregador", "felipe"),
