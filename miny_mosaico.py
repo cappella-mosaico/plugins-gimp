@@ -3,18 +3,45 @@
 from gimpfu import *
 from random import randint
 
-def load_background(img, image_path, background_name):
-    # Background layer.
+def darken_layer(img, layer, base_directory):
+    pdb.gimp_layer_set_opacity(layer, 50)
+    brightness = -1.0
+    contrast = 0.15
+    pdb.gimp_drawable_brightness_contrast(layer, brightness, contrast)
+    load_image(img, base_directory + "/background/textura_ebd.png")
+
+    hue_range = 0.0
+    hue_offset = 0.0
+    lightness = 0.0
+    saturation = -50.0
+    overlap = 0.0
+    pdb.gimp_drawable_hue_saturation(layer, hue_range, hue_offset, lightness, saturation, overlap)
+
+def lighten_layer(img, layer, base_directory):
+    pdb.gimp_layer_set_opacity(layer, 50)
+
+DARK_GRAY = (0.239, 0.239, 0.239)
+WHITE = (1.0, 1.0, 1.0)
+THUMB_TYPE_CONFIG = {
+    "ebd": { "background_color" : DARK_GRAY, "logo": "logo_ebd", "effect": darken_layer, "override_text_color": WHITE },
+    "culto": { "background_color" : WHITE, "logo": "logo_culto", "effect": lighten_layer, "override_text_color": None}
+}
+
+def load_background(img, base_directory, background_name, thumb_config):
+    # background layer
     background = gimp.Layer(img, "Background", img.width, img.height,
                             RGB_IMAGE, 100, NORMAL_MODE)
+
+    pdb.gimp_context_set_background(thumb_config['background_color'])
     background.fill(BACKGROUND_FILL)
     img.add_layer(background, 0)
-    image_background = image_path + "/background/" + background_name + ".png"
+
+    image_background = base_directory + "/background/" + background_name + ".png"
     layer_background = pdb.gimp_file_load_layer(img, image_background)
-    pdb.gimp_layer_set_opacity(layer_background, 50)
     parent = None
     position = 0
     pdb.gimp_image_insert_layer(img, layer_background, parent, position)
+    thumb_config["effect"](img, layer_background, base_directory)
 
 def load_pregador_textbox(img, pregador):
     TEXTBOX_HEIGHT = 40
@@ -32,7 +59,7 @@ def load_pregador_textbox(img, pregador):
     # The justification for your text. { TEXT-JUSTIFY-LEFT (0), TEXT-JUSTIFY-RIGHT (1), TEXT-JUSTIFY-CENTER (2), TEXT-JUSTIFY-FILL (3) }
     pdb.gimp_text_layer_set_justification(layer, TEXT_JUSTIFY_RIGHT)
     # caixa de texto do tamanho restante da tela
-    width = img.width
+    width = img.width -10
     height = TEXTBOX_HEIGHT
     pdb.gimp_text_layer_resize(layer, width, height)
 
@@ -82,9 +109,8 @@ def load_pregador(img, image_pregador, toggle_cubism_effect):
     pdb.gimp_layer_scale(layer_pregador, new_width, new_height, local_origin)
     pdb.gimp_layer_set_offsets(layer_pregador, 0, 0)
 
-def load_logo_culto(img, image_path):
-    image_logo_culto = image_path + "/background/logo_culto.png"
-    layer = pdb.gimp_file_load_layer(img, image_logo_culto)
+def load_image(img, image_path):
+    layer = pdb.gimp_file_load_layer(img, image_path)
     parent = None
     position = 0
     pdb.gimp_image_insert_layer(img, layer, parent, position)
@@ -94,12 +120,13 @@ def startup(title, headline, text_color, pregador, picture_pregador, photo_count
     height = 540
     img = gimp.Image(width, height, RGB)
 
-    load_background(img, base_directory, background_name)
+    load_background(img, base_directory, background_name, THUMB_TYPE_CONFIG[thumb_type])
 
     # selecionar preto para fazer sombra
     gimp.set_foreground((0.0, 0.0, 0.0))
+    pdb.gimp_message(text_color)
 
-    image_pregador = base_directory + "/recortes/" + picture_pregador + str(randint(1, photo_count)).zfill( 3)  +".png"
+    image_pregador = base_directory + "/recortes/" + picture_pregador + str(randint(1, photo_count)).zfill(3)  +".png"
     with_cubism = True
     load_pregador(img, image_pregador, with_cubism)
     without_cubism = False
@@ -107,11 +134,13 @@ def startup(title, headline, text_color, pregador, picture_pregador, photo_count
     load_title_textbox(img, headline, 100.0)
 
     # selecionar cor
-    gimp.set_foreground(text_color)
+    color_override = THUMB_TYPE_CONFIG[thumb_type]["override_text_color"]
+    pdb.gimp_message(THUMB_TYPE_CONFIG[thumb_type])
+    gimp.set_foreground(text_color if color_override is None else color_override)
     load_title_textbox(img, "\"" + title + "\"", 72.0)
     load_pregador_textbox(img, pregador)
 
-    load_logo_culto(img, base_directory)
+    load_image(img, base_directory + "/background/" + THUMB_TYPE_CONFIG[thumb_type]["logo"] + ".png")
 
     gimp.Display(img)
 
