@@ -124,7 +124,6 @@ def startup(title, headline, text_color, pregador, picture_pregador, photo_count
 
     # selecionar preto para fazer sombra
     gimp.set_foreground((0.0, 0.0, 0.0))
-    pdb.gimp_message(text_color)
 
     image_pregador = base_directory + "/recortes/" + picture_pregador + str(randint(1, photo_count)).zfill(3)  +".png"
     with_cubism = True
@@ -135,7 +134,6 @@ def startup(title, headline, text_color, pregador, picture_pregador, photo_count
 
     # selecionar cor
     color_override = THUMB_TYPE_CONFIG[thumb_type]["override_text_color"]
-    pdb.gimp_message(THUMB_TYPE_CONFIG[thumb_type])
     gimp.set_foreground(text_color if color_override is None else color_override)
     load_title_textbox(img, "\"" + title + "\"", 72.0)
     load_pregador_textbox(img, pregador)
