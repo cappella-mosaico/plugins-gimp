@@ -13,7 +13,7 @@ def darken_layer(img, layer, base_directory):
     hue_range = 0.0
     hue_offset = 0.0
     lightness = 0.0
-    saturation = -50.0
+    saturation = -100.0
     overlap = 0.0
     pdb.gimp_drawable_hue_saturation(layer, hue_range, hue_offset, lightness, saturation, overlap)
 
