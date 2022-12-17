@@ -115,7 +115,7 @@ def load_image(img, image_path):
     position = 0
     pdb.gimp_image_insert_layer(img, layer, parent, position)
 
-def startup(title, headline, text_color, pregador, picture_pregador, photo_count, thumb_type, base_directory, background_name):
+def startup(title, headline, text_color, pregador, picture_pregador, photo_count, random_picture, thumb_type, base_directory, background_name):
     width = 960
     height = 540
     img = gimp.Image(width, height, RGB)
@@ -124,8 +124,8 @@ def startup(title, headline, text_color, pregador, picture_pregador, photo_count
 
     # selecionar preto para fazer sombra
     gimp.set_foreground((0.0, 0.0, 0.0))
-
-    image_pregador = base_directory + "/recortes/" + picture_pregador + str(randint(1, photo_count)).zfill(3)  +".png"
+    picture_name = picture_pregador + str(randint(1, photo_count)).zfill(3) if random_picture else picture_pregador
+    image_pregador = base_directory + "/recortes/" + picture_name  +".png"
     with_cubism = True
     load_pregador(img, image_pregador, with_cubism)
     without_cubism = False
@@ -156,7 +156,8 @@ register(
         (PF_COLOR, "text_color", "Cor do Texto", (0.0, 0.0, 0.0)),
         (PF_STRING, "pregador", "Nome Pregador", "Pr. Felipe Lobo"),
         (PF_STRING, "foto_pregador", "Foto Pregador", "felipe"),
-        (PF_INT, "photo_count", "Quantidade de fotos desse pregador", 36),
+        (PF_INT, "photo_count", "Quantidade de fotos desse pregador", 37),
+        (PF_BOOL, "random_picture", "Foto aleatoria", 1),
         (PF_RADIO, "thumb_type", "Tipo Miniatura", "culto",
           (("Culto", "culto"), ("EBD", "ebd"))),
         (PF_DIRNAME, "base_directory", "Pasta Miniaturas", "/home/ruither/Dropbox/Mosaico - Slides/imagens/miniaturas-youtube"),
