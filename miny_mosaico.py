@@ -5,7 +5,7 @@ from random import randint
 
 def darken_layer(img, layer, base_directory):
     pdb.gimp_layer_set_opacity(layer, 50)
-    brightness = -1.0
+    brightness = -0.9
     contrast = 0.15
     pdb.gimp_drawable_brightness_contrast(layer, brightness, contrast)
     load_image(img, base_directory + "/background/textura_ebd.png")
@@ -156,7 +156,7 @@ register(
         (PF_COLOR, "text_color", "Cor do Texto", (0.0, 0.0, 0.0)),
         (PF_STRING, "pregador", "Nome Pregador", "Pr. Felipe Lobo"),
         (PF_STRING, "foto_pregador", "Foto Pregador", "felipe"),
-        (PF_INT, "photo_count", "Quantidade de fotos desse pregador", 37),
+        (PF_INT, "photo_count", "Quantidade de fotos desse pregador", 38),
         (PF_BOOL, "random_picture", "Foto aleatoria", 1),
         (PF_RADIO, "thumb_type", "Tipo Miniatura", "culto",
           (("Culto", "culto"), ("EBD", "ebd"))),
