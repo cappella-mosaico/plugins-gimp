@@ -3,28 +3,11 @@
 from gimpfu import *
 from random import randint
 
-def darken_layer(img, layer, base_directory):
-    pdb.gimp_layer_set_opacity(layer, 50)
-    brightness = -0.9
-    contrast = 0.15
-    pdb.gimp_drawable_brightness_contrast(layer, brightness, contrast)
-    load_image(img, base_directory + "/background/textura_ebd.png")
-
-    hue_range = 0.0
-    hue_offset = 0.0
-    lightness = 0.0
-    saturation = -100.0
-    overlap = 0.0
-    pdb.gimp_drawable_hue_saturation(layer, hue_range, hue_offset, lightness, saturation, overlap)
-
-def lighten_layer(img, layer, base_directory):
-    pdb.gimp_layer_set_opacity(layer, 50)
-
 DARK_GRAY = (0.239, 0.239, 0.239)
 WHITE = (1.0, 1.0, 1.0)
 THUMB_TYPE_CONFIG = {
-    "ebd": { "background_color" : DARK_GRAY, "logo": "logo_ebd", "effect": darken_layer, "override_text_color": WHITE },
-    "culto": { "background_color" : WHITE, "logo": "logo_culto", "effect": lighten_layer, "override_text_color": None}
+    "ebd": { "background_color" : DARK_GRAY, "logo": "logo_ebd", "texture": "textura_ebd", "override_text_color": WHITE },
+    "culto": { "background_color" : WHITE, "logo": "logo_culto", "texture": "textura_culto", "override_text_color": None}
 }
 
 def load_background(img, base_directory, background_name, thumb_config):
@@ -41,7 +24,11 @@ def load_background(img, base_directory, background_name, thumb_config):
     parent = None
     position = 0
     pdb.gimp_image_insert_layer(img, layer_background, parent, position)
-    thumb_config["effect"](img, layer_background, base_directory)
+
+    local_origin = True
+    pdb.gimp_layer_scale(layer_background, img.width, layer_background.height, local_origin)
+    pdb.gimp_layer_set_offsets(layer_background, 0, 0)
+    load_image(img, base_directory + "/background/" + thumb_config["texture"] + ".png")
 
 def load_pregador_textbox(img, pregador):
     TEXTBOX_HEIGHT = 40
