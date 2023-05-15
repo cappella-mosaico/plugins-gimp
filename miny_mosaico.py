@@ -90,6 +90,11 @@ def load_pregador(img, image_pregador, toggle_cubism_effect):
         saturation = 100.0
         overlap = 0.0
         pdb.gimp_drawable_hue_saturation(layer_pregador, hue_range, hue_offset, lightness, saturation, overlap)
+    else:
+        radius = 3.0
+        amount = 0.75
+        threshold = 0.0
+        pdb.plug_in_unsharp_mask(img, layer_pregador, radius, amount, threshold)
 
     new_width = (new_height * layer_pregador.width) / layer_pregador.height
     local_origin = True
